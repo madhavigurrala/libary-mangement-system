@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Library Management System</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+
+            background-image:
+            linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
+            url("https://images.unsplash.com/photo-1524995997946-a1c2e315a42f");
+
+            background-size: cover;
+            background-position: center;
+        }
+
+        .box {
+            width: 900px;
+            margin: 40px auto;
+            background: rgba(255,255,255,0.95);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 0 20px black;
+        }
+
+        h1 {
+            text-align: center;
+            color: #0d47a1;
+        }
+
+        h2 {
+            color: #333;
+            margin-top: 30px;
+        }
+
+        input, button {
+            width: 100%;
+            padding: 8px;
+            margin: 6px 0;
+        }
+
+        button {
+            background-color: #1976d2;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0d47a1;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        th {
+            background-color: #e3f2fd;
+        }
+
+        .return-btn {
+            background-color: green;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="box">
+    <h1>📚 Library Management System</h1>
+
+    <!-- ADD BOOK -->
+    <h2>Add Book</h2>
+    <input type="text" id="bookName" placeholder="Book Name">
+    <input type="text" id="authorName" placeholder="Author Name">
+    <input type="number" id="quantity" placeholder="Quantity">
+    <button onclick="addBook()">Add Book</button>
+
+    <!-- BOOK LIST -->
+    <h2>Books List</h2>
+    <table>
+        <tr>
+            <th>Book</th>
+            <th>Author</th>
+            <th>Quantity</th>
+        </tr>
+        <tbody id="bookTable"></tbody>
+    </table>
+
+    <!-- ISSUE BOOK -->
+    <h2>Issue Book</h2>
+    <input type="text" id="studentName" placeholder="Student Name">
+    <input type="text" id="issueBookName" placeholder="Book Name">
+    <button onclick="issueBook()">Issue Book</button>
+
+    <!-- ISSUED BOOKS -->
+    <h2>Issued Books (Auto Return Date: 15 Days)</h2>
+    <table>
+        <tr>
+            <th>Student</th>
+            <th>Book</th>
+            <th>Issue Date</th>
+            <th>Return Date</th>
+            <th>Action</th>
+        </tr>
+        <tbody id="issueTable"></tbody>
+    </table>
+</div>
+
+<script>
+    let books = [];
+    let issues = [];
+
+    function addBook() {
+        let book = document.getElementById("bookName").value;
+        let author = document.getElementById("authorName").value;
+        let qty = document.getElementById("quantity").value;
+
+        if (book === "" || author === "" || qty === "") {
+            alert("Fill all book details");
+            return;
+        }
+
+        books.push({ book, author, qty });
+        showBooks();
+
+        document.getElementById("bookName").value = "";
+        document.getElementById("authorName").value = "";
+        document.getElementById("quantity").value = "";
+    }
+
+    function showBooks() {
+        let table = document.getElementById("bookTable");
+        table.innerHTML = "";
+
+        books.forEach(b => {
+            table.innerHTML += `
+                <tr>
+                    <td>${b.book}</td>
+                    <td>${b.author}</td>
+                    <td>${b.qty}</td>
+                </tr>`;
+        });
+    }
+
+    function issueBook() {
+        let student = document.getElementById("studentName").value;
+        let book = document.getElementById("issueBookName").value;
+
+        if (student === "" || book === "") {
+            alert("Fill all issue details");
+            return;
+        }
+
+        let issueDate = new Date();
+        let returnDate = new Date();
+        returnDate.setDate(issueDate.getDate() + 15); // AUTO +15 DAYS
+
+        issues.push({
+            student: student,
+            book: book,
+            issue: issueDate.toLocaleDateString(),
+            return: returnDate.toLocaleDateString()
+        });
+
+        showIssues();
+
+        document.getElementById("studentName").value = "";
+        document.getElementById("issueBookName").value = "";
+    }
+
+    function showIssues() {
+        let table = document.getElementById("issueTable");
+        table.innerHTML = "";
+
+        issues.forEach((i, index) => {
+            table.innerHTML += `
+                <tr>
+                    <td>${i.student}</td>
+                    <td>${i.book}</td>
+                    <td>${i.issue}</td>
+                    <td>${i.return}</td>
+                    <td>
+                        <button class="return-btn" onclick="returnBook(${index})">
+                            Return
+                        </button>
+                    </td>
+                </tr>`;
+        });
+    }
+
+    function returnBook(index) {
+        issues.splice(index, 1);
+        showIssues();
+        alert("Book Returned Successfully");
+    }
+</script>
+
+</body>
+</html>
